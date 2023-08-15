@@ -1,7 +1,9 @@
 import { Button, Typography } from "@mui/material"
 import { red } from "@mui/material/colors"
 import React from "react"
-
+import { useEffect, useState } from 'react';
+import logo from '../assets/Logo.svg'
+import spinner from '../assets/Spinner.gif'
 import { styled, alpha } from '@mui/material/styles';
 
 import InputBase from '@mui/material/InputBase';
@@ -49,14 +51,39 @@ function AppBar() {
             },
         },
     }));
-    return (
+    const [isLoading, setIsLoading] = useState(true);
+    const [email, setEmail] = useState(null);
 
-        <div style={{
+    useEffect(() => {
+        fetch("http://localhost:3000/api/v1/admin/me", {
+
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        }).then((data) => {
+
+            data.json().then((data2) => {
+                console.log(data2.user);
+                if (data2.user) {
+                    setEmail(data2.user)
+                    setIsLoading(true)
+                }
+            })
+
+        })
+    })
+   
+    if (email) {
+ 
+        return <div style={{
             display: "flex",
             justifyContent: "space-between",
             // backgroundColor: "violet",
         }}>
-       <div >  <a href="/" >  Course Marketplace</a> </div> 
+            <div >
+                <a href="/" >
+                    <img src={logo} width={80} border="1px" alt="" />
+                </a> </div>
             <div style={{ display: "flex" }}>
                 <Search>
                     <SearchIconWrapper>
@@ -67,14 +94,70 @@ function AppBar() {
                         inputProps={{ 'aria-label': 'search' }}
                     />
                 </Search>
-                <div ><Button variant="contained">Sign In</Button></div>
-                <div ><Button variant="contained"
-               href="/signup"
-                >Sign Up</Button></div>
+                <div style={{ display: "flex" }} >
+                    <div style={{ border: "1px solid", Width: "100px" }}>
+                        <Typography variant="overline">
+                            {email}
+                        </Typography> </div>
+                <Button variant="contained"
+                        onClick={() => {
+                            window.location = "/addCourse"
+                        }}>
+                        Add Course
+                    </Button>
+                    <Button variant="contained"
+                        onClick={() => {
+                            window.location = "/courses"
+                        }}>
+                        View Courses
+                    </Button>
+           
+
+                    <Button variant="contained"
+                        onClick={() => {
+                            localStorage.setItem('token', null);
+                            window.location = "/signup"
+                        }}>
+                        Logout
+                    </Button>
+
+                </div>
             </div>
         </div>
 
+    }
+
+    return (
+
+        <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            // backgroundColor: "violet",
+        }}>
+            <div style={{ border: "1px solid", Width: "100px" }}> <Typography variant="overline"> {email} </Typography> </div>
+            <div style={{ display: "flex" }}>
+                <Search>
+                    <SearchIconWrapper>
+                        <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                        placeholder="Search…"
+                        inputProps={{ 'aria-label': 'search' }}
+                    />
+                </Search>
+                <div >
+                    <Button 
+                    variant="contained"
+                    href="/signin"
+                    >Sign In</Button>
+                    </div>
+                <div ><Button variant="contained"
+                    href="/signup"
+                >Sign Up</Button></div>
+            </div>
+        </div>
     )
+
 }
 
 

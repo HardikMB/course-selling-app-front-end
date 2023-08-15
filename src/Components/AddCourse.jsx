@@ -1,24 +1,20 @@
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField'
+import { useState } from "react";
 
-import { Card, Typography } from '@mui/material';
-import { useState } from 'react';
-
-function SignUp() {
-
-    const [email,setEmail] = useState("");
-    const [password,setPassword] = useState("");
-    return (
-        <>
-        {email}
-            <div style={{
+import { Button, Card, Typography,TextField } from "@mui/material";
+function Course() {
+    const [title,setTitle] = useState('')
+    const [description,setdescription] = useState('')
+    const [imgLink,setImgLink] = useState('')
+    const [status,setStatus] = useState('')
+return <>
+ <div style={{
                 paddingTop:300,
                 paddingLeft:1100
             }} >
-                <Typography>
+                <Typography component={'span'}>
                     <div style={{
                     }}>
-                        <h2>Sign Up for Course Marketplace</h2>
+                        <h2>Add a Course to Course Marketplace</h2>
                     </div>
                 </Typography>
                 <div>
@@ -28,22 +24,31 @@ function SignUp() {
                     }}>
                         <div >
 
-                            <TextField id="username" 
+                            <TextField id="title" 
                                        fullWidth={true}
-                                       label="Username"
+                                       label="Title of Course"
                                        variant="outlined"
                                        onChange={(e)=>{
-                                            setEmail(e.target.value);
+                                        setTitle(e.target.value);
                                        }}
                                        ></TextField>
                             <br /><br />
-                            <TextField  id="password"
+                            <TextField  id="Description"
                                         fullWidth={true}
-                                        label="Password"
+                                        label="Description of course"
                                         variant="outlined" 
-                                        type='password'
+                                        
                                         onChange={(e)=>{
-                                            setPassword(e.target.value);
+                                            setdescription(e.target.value);
+                                       }}
+                                       ></TextField>
+                            <br /><br />                            <TextField  id="Image Source"
+                                        fullWidth={true}
+                                        label="Link of Image Source"
+                                        variant="outlined" 
+                                        
+                                        onChange={(e)=>{
+                                            setImgLink(e.target.value);
                                        }}
                                        ></TextField>
                             <br /><br />
@@ -52,45 +57,36 @@ function SignUp() {
                                 variant="contained"
                                 onClick={
                                     () => {
-                                        // const username = document.getElementById('username').value;
-                                        // const password = document.getElementById('password').value;
-                                        const url = "http://127.0.0.1:3000/api/v1/admin/signup"
-
-                                        // console.log(JSON.stringify({username,password}))
+                                        const url = "http://127.0.0.1:3000/api/v1/courses/add"
                                         fetch(url, {
                                             method: 'POST',
                                             body: JSON.stringify(
                                                 {
-                                                    username:email,
-                                                    password:password
+                                                    title:title,
+                                                    description:description,
+                                                    imgSrc:imgLink
                                                 }),
                                             headers: {
-                                                'Content-type': 'application/json'
+                                                'Content-type': 'application/json',
+                                                "Authorization": "Bearer " + localStorage.getItem("token")
                                             }
                                         }).then((res) => {
                                             const data = res.json();
 
                                             return data;
                                         }).then((data) => {
-                                            if (data.token) {
-                                                localStorage.setItem('token', data.token)
-                                                
-                                            }
-                                            else {
-                                                alert("Error while signing up");
-                                            }
+                                             setStatus(data.message)
                                         })
                                     }
                                 }
-                            >Sign Up</Button>
+                            >Add Course</Button>
                             <br />
                         </div>
                     </Card>
+                    {status}
                 </div>
             </div>
-        </>
-    )
+</>
 }
 
-
-export default SignUp
+export default Course
